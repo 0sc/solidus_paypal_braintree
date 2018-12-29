@@ -28,7 +28,11 @@ SolidusPaypalBraintree.PaypalButton = function(element, paypalOptions, options) 
 SolidusPaypalBraintree.PaypalButton.prototype.initialize = function() {
   this._client = new SolidusPaypalBraintree.createClient({useDataCollector: true, usePaypal: true});
 
-  return this._client.initialize().then(this.initializeCallback.bind(this));
+  return this._client.initialize()
+    .then(
+      this.initializeCallback.bind(this),
+      function(err){ console.log("yeet!!", err)}
+    );
 };
 
 SolidusPaypalBraintree.PaypalButton.prototype.initializeCallback = function() {
@@ -102,7 +106,7 @@ SolidusPaypalBraintree.PaypalButton.prototype._transactionParams = function(payl
     "options": this._options,
     "transaction" : {
       "email" : payload.details.email,
-      "phone" : payload.details.phone,
+      "phone" : payload.details.phone || this._paypalOptions.shippingAddressOverride.phone,
       "nonce" : payload.nonce,
       "payment_type" : payload.type,
       "address_attributes" : this._addressParams(payload)
